@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#070b14" />
+  <meta name="description" content="FpEnhancer — AI fingerprint image enhancement. Upload a fingerprint image and enhance its clarity." />
+  <title>FpEnhancer • Fingerprint Image Enhancement</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+  <!-- Ambient background -->
+  <div class="bg" aria-hidden="true">
+    <div class="bg-glow bg-glow--1"></div>
+    <div class="bg-glow bg-glow--2"></div>
+    <div class="bg-grid"></div>
+    <svg class="bg-print" viewBox="0 0 600 600" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+      <path d="M300 60c-133 0-240 107-240 240 0 42 11 82 30 116" />
+      <path d="M300 100c-110 0-200 90-200 200 0 36 9 70 26 100" />
+      <path d="M300 140c-88 0-160 72-160 160 0 32 9 62 26 88" />
+      <path d="M300 180c-66 0-120 54-120 120 0 32 12 60 32 82" />
+      <path d="M300 220c-44 0-80 36-80 80 0 30 16 56 40 70" />
+      <path d="M300 260c-22 0-40 18-40 40 0 40 20 74 50 96" />
+      <path d="M300 60c133 0 240 107 240 240 0 60-22 115-58 157" />
+      <path d="M300 100c110 0 200 90 200 200 0 50-18 96-49 132" />
+      <path d="M300 140c88 0 160 72 160 160 0 42-16 80-42 108" />
+      <path d="M300 180c66 0 120 54 120 120 0 34-14 64-36 86" />
+      <path d="M300 220c44 0 80 36 80 80 0 60-30 110-80 140" />
+      <path d="M300 260c22 0 40 18 40 40 0 50-22 94-58 124" />
+    </svg>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="container header__inner">
+      <a class="brand" href="/" aria-label="FpEnhancer home">
+        <span class="brand__icon">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 14.5A15 15 0 0 1 36 14.5" />
+            <path d="M9 22a16.5 16.5 0 0 1 30 0" />
+            <path d="M14 22.5a10.5 10.5 0 0 1 20 0c0 6-1 11.5-3 15.5" />
+            <path d="M18.5 24a5.5 5.5 0 0 1 11 0c0 5.5-.6 10.5-2.2 15" />
+            <path d="M24 24c0 5-.5 9.5-1.6 13.5" />
+            <path d="M12 28c.4 3.6 1.3 7 2.7 10" />
+          </svg>
+        </span>
+        <span class="brand__text">
+          <span class="brand__name">FpEnhancer</span>
+          <span class="brand__sub">Fingerprint Image Enhancement</span>
+        </span>
+      </a>
+      <div class="api-status api-status--checking" id="apiStatus" role="status" aria-live="polite">
+        <span class="api-status__dot" aria-hidden="true">●</span>
+        <span class="api-status__text" id="apiStatusText">Checking API…</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="container main">
+    <!-- Hero -->
+    <section class="hero">
+      <span class="hero__eyebrow">AI-Powered • CPU Inference</span>
+      <h1 class="hero__title">Enhance Your <span class="grad-text">Fingerprint</span></h1>
+      <p class="hero__desc">Upload a fingerprint image and enhance its clarity.</p>
+    </section>
+
+    <!-- Workspace card -->
+    <section class="glass card workspace" id="workspace">
+
+      <!-- STATE: upload -->
+      <div class="state state--active" id="stateUpload">
+        <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Drop fingerprint image here or choose an image">
+          <div class="dropzone__ring" aria-hidden="true"></div>
+          <div class="dropzone__icon" aria-hidden="true">
+            <svg viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 20a19 19 0 0 1 32 0" />
+              <path d="M12 30a22 22 0 0 1 40 0" />
+              <path d="M18 30.5a14 14 0 0 1 28 0c0 8-1.5 15.5-4 21" />
+              <path d="M24 32a8 8 0 0 1 16 0c0 7.5-.8 14.5-3 20.5" />
+              <path d="M32 32c0 7-.7 13.5-2.2 19.5" />
+              <path d="M16 38c.5 5 1.8 9.6 3.8 14" />
+              <path class="dropzone__arrow" d="M32 60V46M26 52l6-6 6 6" />
+            </svg>
+          </div>
+          <p class="dropzone__title">Drop fingerprint image here</p>
+          <p class="dropzone__or">or</p>
+          <button type="button" class="btn btn--primary btn--sm" id="chooseBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M12 15V4M7 9l5-5 5 5"/></svg>
+            Choose Image
+          </button>
+          <p class="dropzone__formats">Supported: <span>JPG</span> • <span>JPEG</span> • <span>PNG</span> • <span>BMP</span></p>
+          <input type="file" id="fileInput" class="visually-hidden" accept="image/jpeg,image/png,image/bmp,.jpg,.jpeg,.png,.bmp" />
+        </div>
+        <p class="inline-error" id="uploadError" role="alert" hidden></p>
+      </div>
+
+      <!-- STATE: preview -->
+      <div class="state" id="statePreview">
+        <div class="preview">
+          <div class="preview__image-wrap">
+            <img id="previewImg" class="preview__img" alt="Original fingerprint preview" />
+            <span class="badge badge--outline preview__badge">ORIGINAL</span>
+          </div>
+          <div class="preview__meta">
+            <h3 class="preview__heading">Image Ready</h3>
+            <dl class="meta-list">
+              <div class="meta-list__row"><dt>Filename</dt><dd id="metaName">—</dd></div>
+              <div class="meta-list__row"><dt>File size</dt><dd id="metaSize">—</dd></div>
+              <div class="meta-list__row"><dt>Dimensions</dt><dd id="metaDims">—</dd></div>
+              <div class="meta-list__row"><dt>Type</dt><dd id="metaType">—</dd></div>
+            </dl>
+            <div class="preview__actions">
+              <button type="button" class="btn btn--ghost btn--sm" id="changeBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+                Change Image
+              </button>
+              <button type="button" class="btn btn--danger-ghost btn--sm" id="removeBtn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+                Remove
+              </button>
+            </div>
+            <button type="button" class="btn btn--primary btn--lg btn--glow" id="enhanceBtn">
+              <span class="btn__sparkle" aria-hidden="true">✨</span> Enhance Fingerprint
+            </button>
+            <p class="inline-error" id="previewError" role="alert" hidden></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATE: processing -->
+      <div class="state" id="stateProcessing" aria-live="polite">
+        <div class="processing">
+          <div class="fp-loader" aria-hidden="true">
+            <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <path class="fp-loader__line" d="M30 40a35 35 0 0 1 60 0" />
+              <path class="fp-loader__line" d="M22 56a42 42 0 0 1 76 0" />
+              <path class="fp-loader__line" d="M34 57a26 26 0 0 1 52 0c0 14-2.6 27-7.4 38" />
+              <path class="fp-loader__line" d="M45 60a15 15 0 0 1 30 0c0 13-1.6 25-5.2 36" />
+              <path class="fp-loader__line" d="M60 60c0 12-1.3 23.5-4 34" />
+              <path class="fp-loader__line" d="M30 70c1 9 3.2 17.5 6.8 25" />
+            </svg>
+            <div class="fp-loader__scan"></div>
+            <div class="fp-loader__halo"></div>
+          </div>
+          <h3 class="processing__title">Enhancing fingerprint<span class="dots"><span>.</span><span>.</span><span>.</span></span></h3>
+          <p class="processing__sub">Processing on CPU...</p>
+          <p class="processing__hint">This may take a moment depending on image size.</p>
+        </div>
+      </div>
+
+      <!-- STATE: result -->
+      <div class="state" id="stateResult">
+        <div class="result">
+          <div class="result__header">
+            <h3 class="result__title"><span class="check" aria-hidden="true">✓</span> Enhancement Complete</h3>
+            <div class="seg" role="tablist" aria-label="Result view">
+              <button type="button" class="seg__btn seg__btn--active" data-view="side" role="tab" aria-selected="true">Side by Side</button>
+              <button type="button" class="seg__btn" data-view="compare" role="tab" aria-selected="false">Before / After</button>
+            </div>
+          </div>
+
+          <!-- Side-by-side view -->
+          <div class="result__view result__view--active" id="viewSide">
+            <figure class="img-card">
+              <figcaption class="img-card__label">ORIGINAL</figcaption>
+              <div class="img-card__frame">
+                <img id="resultOriginal" alt="Original fingerprint" />
+                <div class="img-card__tools">
+                  <button type="button" class="tool-btn" data-zoom="original" title="Zoom" aria-label="Zoom original">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>
+                  </button>
+                  <button type="button" class="tool-btn" data-full="original" title="Fullscreen" aria-label="Fullscreen original">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+                  </button>
+                </div>
+              </div>
+            </figure>
+            <div class="result__arrow" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </div>
+            <figure class="img-card img-card--enhanced">
+              <figcaption class="img-card__label img-card__label--accent">ENHANCED</figcaption>
+              <div class="img-card__frame">
+                <img id="resultEnhanced" alt="Enhanced fingerprint" />
+                <div class="img-card__tools">
+                  <button type="button" class="tool-btn" data-zoom="enhanced" title="Zoom" aria-label="Zoom enhanced">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3M11 8v6M8 11h6"/></svg>
+                  </button>
+                  <button type="button" class="tool-btn" data-full="enhanced" title="Fullscreen" aria-label="Fullscreen enhanced">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+                  </button>
+                </div>
+              </div>
+            </figure>
+          </div>
+
+          <!-- Before/After slider view -->
+          <div class="result__view" id="viewCompare">
+            <div class="compare" id="compare">
+              <img class="compare__img compare__img--after" id="compareAfter" alt="Enhanced fingerprint" draggable="false" />
+              <div class="compare__before-wrap" id="compareBeforeWrap">
+                <img class="compare__img compare__img--before" id="compareBefore" alt="Original fingerprint" draggable="false" />
+              </div>
+              <div class="compare__handle" id="compareHandle">
+                <div class="compare__knob" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-5 6 5 6M15 6l5 6-5 6"/></svg>
+                </div>
+              </div>
+              <span class="compare__tag compare__tag--left">ORIGINAL</span>
+              <span class="compare__tag compare__tag--right">ENHANCED</span>
+              <input type="range" class="compare__range" id="compareRange" min="0" max="100" value="50" aria-label="Before/After slider" />
+            </div>
+            <p class="compare__hint">Drag the handle to compare.</p>
+          </div>
+
+          <div class="result__meta" id="resultMeta"></div>
+
+          <div class="result__actions">
+            <a class="btn btn--primary btn--lg btn--glow" id="downloadEnhanced" download="enhanced_fingerprint.png" href="#">⬇ Download Enhanced</a>
+            <a class="btn btn--ghost" id="downloadOriginal" download href="#">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7 10l5 5 5-5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+              Download Original
+            </a>
+            <button type="button" class="btn btn--ghost" id="anotherBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+              Enhance Another Image
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- STATE: error -->
+      <div class="state" id="stateError" role="alert">
+        <div class="error">
+          <div class="error__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg>
+          </div>
+          <h3 class="error__title">Enhancement Failed</h3>
+          <p class="error__desc">Something went wrong while processing the fingerprint.</p>
+          <p class="error__detail" id="errorDetail"></p>
+          <div class="error__actions">
+            <button type="button" class="btn btn--primary" id="retryBtn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+              Try Again
+            </button>
+            <button type="button" class="btn btn--ghost" id="errorNewBtn">Choose Different Image</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section">
+      <h2 class="section__title">How It Works</h2>
+      <div class="steps">
+        <article class="glass step">
+          <span class="step__num">01</span>
+          <div class="step__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/><path d="M12 15V4M7 9l5-5 5 5"/></svg>
+          </div>
+          <h3 class="step__title">Upload</h3>
+          <p class="step__desc">Choose a fingerprint image.</p>
+        </article>
+        <article class="glass step">
+          <span class="step__num">02</span>
+          <div class="step__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.8 4.6L18.5 9.5l-4.7 1.9L12 16l-1.8-4.6L5.5 9.5l4.7-1.9z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></svg>
+          </div>
+          <h3 class="step__title">Enhance</h3>
+          <p class="step__desc">FpEnhancer processes the image.</p>
+        </article>
+        <article class="glass step">
+          <span class="step__num">03</span>
+          <div class="step__icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+          </div>
+          <h3 class="step__title">Download</h3>
+          <p class="step__desc">Download the enhanced result.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Privacy -->
+    <section class="glass privacy">
+      <div class="privacy__icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M12 8v4M12 16h.01"/></svg>
+      </div>
+      <div>
+        <h3 class="privacy__title">Privacy</h3>
+        <p class="privacy__text">Your uploaded image is sent to the FpEnhancer processing server for enhancement.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p class="footer__made">Made with <span class="heart" aria-label="love">❤️</span> By Vikash</p>
+      <p class="footer__tag">FpEnhancer • Fingerprint Image Enhancement</p>
+    </div>
+  </footer>
+
+  <!-- Lightbox / Fullscreen viewer -->
+  <div class="lightbox" id="lightbox" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Image viewer">
+    <div class="lightbox__bar">
+      <span class="lightbox__title" id="lightboxTitle">Image</span>
+      <div class="lightbox__tools">
+        <button type="button" class="tool-btn tool-btn--lg" id="lbZoomOut" title="Zoom out" aria-label="Zoom out">−</button>
+        <span class="lightbox__zoom" id="lbZoomLabel">100%</span>
+        <button type="button" class="tool-btn tool-btn--lg" id="lbZoomIn" title="Zoom in" aria-label="Zoom in">+</button>
+        <button type="button" class="tool-btn tool-btn--lg" id="lbReset" title="Reset" aria-label="Reset zoom">1:1</button>
+        <button type="button" class="tool-btn tool-btn--lg" id="lbFullscreen" title="Toggle fullscreen" aria-label="Toggle fullscreen">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+        </button>
+        <button type="button" class="tool-btn tool-btn--lg" id="lbClose" title="Close" aria-label="Close viewer">✕</button>
+      </div>
+    </div>
+    <div class="lightbox__stage" id="lightboxStage">
+      <img id="lightboxImg" alt="" draggable="false" />
+    </div>
+    <p class="lightbox__hint">Scroll / pinch to zoom • Drag to pan • Esc to close</p>
+  </div>
+
+  <script src="/static/app.js" defer></script>
+</body>
+</html>
