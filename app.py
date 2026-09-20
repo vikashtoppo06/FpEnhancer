@@ -6,7 +6,8 @@ import torch
 import numpy as np
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from easydict import EasyDict as edict
 
 from models.Enhancer import Enhancer
@@ -33,6 +34,14 @@ INPUT_DIR = os.path.join(
 
 OUTPUT_DIR = os.path.join(
     BASE_DIR, "data", "result", "Enhancer"
+)
+
+STATIC_DIR = os.path.join(
+    BASE_DIR, "static"
+)
+
+INDEX_PATH = os.path.join(
+    STATIC_DIR, "index.html"
 )
 
 os.makedirs(INPUT_DIR, exist_ok=True)
@@ -91,14 +100,46 @@ app = FastAPI(
 )
 
 
-@app.get("/")
-def home():
+# --------------------------------------------------
+# FRONTEND (served by this same FastAPI app)
+# --------------------------------------------------
+
+if os.path.isdir(STATIC_DIR):
+    app.mount(
+        "/static",
+        StaticFiles(directory=STATIC_DIR),
+        name="static"
+    )
+
+
+def health_payload():
 
     return {
         "status": "online",
         "service": "FpEnhancer",
         "device": "CPU"
     }
+
+
+@app.get("/health")
+def health():
+
+    return health_payload()
+
+
+@app.api_route("/", methods=["GET", "HEAD"], include_in_schema=False)
+def home():
+
+    # Serve the FpEnhancer web interface.
+    # Fall back to the original JSON status if the UI is missing.
+    if os.path.isfile(INDEX_PATH):
+        return FileResponse(
+            INDEX_PATH,
+            media_type="text/html",
+            headers={"Cache-Control": "no-cache"}
+        )
+
+    return JSONResponse(health_payload())
 
 
 @app.post("/enhance")
