@@ -10,3 +10,4 @@ PyYAML
 scipy
 easydict
 tqdm
+scikit-image
