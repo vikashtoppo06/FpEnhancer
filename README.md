@@ -90,6 +90,25 @@ Examples of image augmentation are shown as follows.
     python test_VQFormerEnhancer.py
     ```
 
+## Web App (FastAPI + FpEnhancer UI)
+The `app.py` FastAPI application serves both the web interface and the enhancement API from one origin.
+
+```shell
+pip install -r requirements.txt
+uvicorn app:app --host 0.0.0.0 --port 8000
+```
+
+Then open `http://localhost:8000` (on Railway: the deployed service URL).
+
+| Route | Description |
+|-------|-------------|
+| `GET /` | FpEnhancer web interface (`static/index.html`) |
+| `GET /health` | `{"status": "online", "service": "FpEnhancer", "device": "CPU"}` |
+| `POST /enhance` | multipart/form-data, field `file` → returns enhanced `image/png` |
+| `/static/*` | CSS / JS / icon assets |
+
+Workflow: open website → upload fingerprint → **Enhance Fingerprint** → the CPU model processes it via `POST /enhance` → result appears with zoom, fullscreen and a before/after slider → download `enhanced_fingerprint.png`.
+
 ## Notice :exclamation:
 Due to the fact that we only add some simple modal noise during training, there are still challenges in difficult scenarios such as latent fingerprints, highly blurry/incomplete images or complex backgrounds.
 Below are examples before and after fingerprint enhancement.
