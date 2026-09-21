@@ -92,22 +92,66 @@ Examples of image augmentation are shown as follows.
 
 ## Web App (FastAPI + FpEnhancer UI)
 The `app.py` FastAPI application serves both the web interface and the enhancement API from one origin.
+The UI is a **bulk fingerprint enhancement dashboard** protected by a secure server-side login.
 
 ```shell
 pip install -r requirements.txt
+export APP_USERNAME=youruser
+export APP_PASSWORD=yourstrongpassword
 uvicorn app:app --host 0.0.0.0 --port 8000
 ```
 
 Then open `http://localhost:8000` (on Railway: the deployed service URL).
 
-| Route | Description |
-|-------|-------------|
-| `GET /` | FpEnhancer web interface (`static/index.html`) |
-| `GET /health` | `{"status": "online", "service": "FpEnhancer", "device": "CPU"}` |
-| `POST /enhance` | multipart/form-data, field `file` → returns enhanced `image/png` |
-| `/static/*` | CSS / JS / icon assets |
+### Environment variables
 
-Workflow: open website → upload fingerprint → **Enhance Fingerprint** → the CPU model processes it via `POST /enhance` → result appears with zoom, fullscreen and a before/after slider → download `enhanced_fingerprint.png`.
+| Variable | Required | Default | Description |
+|----------|----------|---------|-------------|
+| `APP_USERNAME` | yes | — | Login username (never sent to the browser) |
+| `APP_PASSWORD` | yes | — | Login password (never sent to the browser, never logged) |
+| `IDLE_TIMEOUT_SECONDS` | no | `300` | Server-enforced idle timeout (5 min) |
+| `ABSOLUTE_SESSION_SECONDS` | no | `43200` | Hard cap on session lifetime (12 h) |
+| `SESSION_COOKIE_SECURE` | no | auto | Force `Secure` cookie flag (`true`/`false`). Auto-detected from HTTPS / `X-Forwarded-Proto` |
+| `MAX_UPLOAD_MB` | no | `25` | Max upload size per image |
+| `LOGIN_MAX_ATTEMPTS` / `LOGIN_LOCKOUT_SECONDS` | no | `8` / `900` | Login brute-force protection per IP |
+
+If `APP_USERNAME` / `APP_PASSWORD` are missing, login is disabled (HTTP 503) and the dashboard cannot be accessed.
+
+### Routes
+
+| Route | Auth | Description |
+|-------|------|-------------|
+| `GET /` | ✔ | Dashboard (`static/index.html`); redirects to `/login` when not authenticated |
+| `GET /login` | — | Login page |
+| `POST /login` | — | JSON `{username, password}` (or form) → sets HttpOnly session cookie |
+| `POST /logout` | — | Destroys the session, clears the cookie |
+| `GET /auth/status` | — | `{authenticated, idle_timeout, remaining}` — does **not** extend the session |
+| `POST /auth/ping` | ✔ | Marks meaningful activity; refreshes the server-side idle timer |
+| `GET /health` | — | `{"status": "online", "service": "FpEnhancer", "device": "CPU"}` |
+| `POST /enhance` | ✔ | multipart/form-data, field `file` → returns enhanced `image/png` |
+| `/static/*` | — | CSS / JS / icon assets (JSZip is vendored in `static/vendor/`) |
+
+### Security model
+
+* Sessions are stored server-side (in-memory); the cookie is an opaque random token, `HttpOnly`, `SameSite=Lax`, `Secure` under HTTPS.
+* **Idle timeout is enforced by the server** (`auth.py`): a session with no meaningful activity for 5 minutes is invalid, even with JavaScript disabled.
+  The dashboard additionally warns 30 s before expiry with a **Stay Logged In** button and auto-logs out.
+* `/enhance` rejects unauthenticated requests (401), non-image extensions (415), corrupt images (400) and oversized uploads (413).
+  Client filenames are never used as filesystem paths (UUIDs are used); temporary files are deleted after the response is sent.
+* CPU inference is serialised with a lock and executed in a worker thread, so the API stays responsive during long jobs.
+
+### Bulk workflow
+
+Login → drag & drop / choose one or many images (JPG, JPEG, PNG, BMP) → each image becomes a card
+(original preview, filename, size, status) → **Enhance All** processes them sequentially through the existing
+`POST /enhance` (progress `3 / 10 completed`, per-card `Pending / Processing... / Completed / Failed`) →
+**Download** per image (`finger1.jpg` → `finger1_enhanced.png`), **Retry** failed images, **Before / After** slider,
+**Download All as ZIP** (client-side via JSZip; successful images only; duplicate names de-duplicated), **Clear All**.
+
+### Railway
+
+The `Dockerfile` is unchanged (CPU-only). Set `APP_USERNAME` and `APP_PASSWORD` in the Railway service variables.
+Railway terminates TLS and forwards `X-Forwarded-Proto: https`, so the session cookie is automatically marked `Secure`.
 
 ## Notice :exclamation:
 Due to the fact that we only add some simple modal noise during training, there are still challenges in difficult scenarios such as latent fingerprints, highly blurry/incomplete images or complex backgrounds.
