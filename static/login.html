@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#070b14" />
+  <meta name="robots" content="noindex" />
+  <title>Sign in • FpEnhancer</title>
+  <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body class="auth-body">
+  <!-- Ambient background -->
+  <div class="bg" aria-hidden="true">
+    <div class="bg-glow bg-glow--1"></div>
+    <div class="bg-glow bg-glow--2"></div>
+    <div class="bg-grid"></div>
+    <svg class="bg-print" viewBox="0 0 600 600" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round">
+      <path d="M300 60c-133 0-240 107-240 240 0 42 11 82 30 116" />
+      <path d="M300 100c-110 0-200 90-200 200 0 36 9 70 26 100" />
+      <path d="M300 140c-88 0-160 72-160 160 0 32 9 62 26 88" />
+      <path d="M300 180c-66 0-120 54-120 120 0 32 12 60 32 82" />
+      <path d="M300 220c-44 0-80 36-80 80 0 30 16 56 40 70" />
+      <path d="M300 260c-22 0-40 18-40 40 0 40 20 74 50 96" />
+      <path d="M300 60c133 0 240 107 240 240 0 60-22 115-58 157" />
+      <path d="M300 100c110 0 200 90 200 200 0 50-18 96-49 132" />
+      <path d="M300 140c88 0 160 72 160 160 0 42-16 80-42 108" />
+      <path d="M300 180c66 0 120 54 120 120 0 34-14 64-36 86" />
+      <path d="M300 220c44 0 80 36 80 80 0 60-30 110-80 140" />
+      <path d="M300 260c22 0 40 18 40 40 0 50-22 94-58 124" />
+    </svg>
+  </div>
+
+  <main class="auth">
+    <section class="glass card auth__card" aria-labelledby="authTitle">
+      <div class="auth__brand">
+        <span class="brand__icon">
+          <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 14.5A15 15 0 0 1 36 14.5" />
+            <path d="M9 22a16.5 16.5 0 0 1 30 0" />
+            <path d="M14 22.5a10.5 10.5 0 0 1 20 0c0 6-1 11.5-3 15.5" />
+            <path d="M18.5 24a5.5 5.5 0 0 1 11 0c0 5.5-.6 10.5-2.2 15" />
+            <path d="M24 24c0 5-.5 9.5-1.6 13.5" />
+            <path d="M12 28c.4 3.6 1.3 7 2.7 10" />
+          </svg>
+        </span>
+        <div>
+          <p class="brand__name">FpEnhancer</p>
+          <p class="brand__sub">Fingerprint Image Enhancement</p>
+        </div>
+      </div>
+
+      <span class="hero__eyebrow auth__eyebrow">Secure Access</span>
+      <h1 class="auth__title" id="authTitle">Sign in to continue</h1>
+      <p class="auth__desc">Enter your credentials to open the fingerprint enhancement dashboard.</p>
+
+      <!-- Works with JavaScript disabled too (classic form POST). -->
+      <form class="auth__form" id="loginForm" method="post" action="/login" autocomplete="on" novalidate>
+        <label class="field">
+          <span class="field__label">Username</span>
+          <span class="field__control">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+            <input type="text" name="username" id="username" placeholder="Username" autocomplete="username" autocapitalize="none" spellcheck="false" required />
+          </span>
+        </label>
+
+        <label class="field">
+          <span class="field__label">Password</span>
+          <span class="field__control">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+            <input type="password" name="password" id="password" placeholder="Password" autocomplete="current-password" required />
+            <button type="button" class="field__eye" id="togglePw" aria-label="Show password" aria-pressed="false">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+            </button>
+          </span>
+        </label>
+
+        <p class="inline-error" id="loginError" role="alert" hidden></p>
+        <p class="auth__notice" id="loginNotice" hidden></p>
+
+        <button type="submit" class="btn btn--primary btn--lg btn--glow auth__submit" id="loginBtn">
+          <span class="auth__submit-label">Sign In</span>
+          <span class="auth__spinner" aria-hidden="true" hidden></span>
+        </button>
+      </form>
+
+      <p class="auth__hint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        Sessions end automatically after 5 minutes of inactivity.
+      </p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p class="footer__made">Made by Vikash <span class="heart" aria-label="love">❤️</span></p>
+      <p class="footer__tag">FpEnhancer • Fingerprint Image Enhancement</p>
+    </div>
+  </footer>
+
+  <script src="/static/login.js" defer></script>
+</body>
+</html>
